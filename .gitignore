@@ -1,0 +1,23 @@
+# Python
+backend/venv/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+
+# Database
+database/*.db
+
+# Vector DB
+backend/chroma_db/
+
+# Node
+frontend/node_modules/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
