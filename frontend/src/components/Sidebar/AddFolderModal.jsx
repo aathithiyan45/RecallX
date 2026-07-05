@@ -44,7 +44,7 @@ function AddFolderModal({ isOpen, onClose, onFolderAdded }) {
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <FolderPlus className="sidebar-logo-icon" size={24} />
-                        <h3 className="modal-title" style={{ margin: 0 }}>Add Folder</h3>
+                        <h3 className="modal-title" style={{ margin: 0 }}>Add Knowledge Source</h3>
                     </div>
                     <button className="icon-btn" onClick={onClose} style={{ padding: "4px" }}>
                         <X size={20} />
@@ -52,7 +52,7 @@ function AddFolderModal({ isOpen, onClose, onFolderAdded }) {
                 </div>
                 
                 <p className="modal-desc">
-                    Enter the absolute path of a local folder you would like RecallX to watch and index. Supported formats: PDF, DOCX, TXT.
+                    Enter the absolute path of a local folder you would like RecallX to add to your personal knowledge memory. Supported formats: PDF, DOCX, TXT.
                 </p>
 
                 <form onSubmit={handleSubmit}>
@@ -88,10 +88,10 @@ function AddFolderModal({ isOpen, onClose, onFolderAdded }) {
                             {loading ? (
                                 <>
                                     <Loader2 className="animate-spin" size={16} />
-                                    Registering...
+                                    Adding source...
                                 </>
                             ) : (
-                                "Add Folder"
+                                "Add Source"
                             )}
                         </button>
                     </div>

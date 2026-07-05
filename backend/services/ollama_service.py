@@ -29,7 +29,8 @@ class OllamaService:
                 {
                     "file": result["metadata"]["file"],
                     "chunk": result["metadata"]["chunk"],
-                    "score": round(result["score"], 4)
+                    "score": round(result["score"], 4),
+                    "text": result["document"]
                 }
             )
 

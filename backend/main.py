@@ -76,6 +76,28 @@ async def fallback_exception_handler(request, exc):
 # Initialize SQLite Database
 initialize_database()
 
+import threading
+from database.folder_repository import folder_repository
+from watcher.folder_watcher import folder_watcher
+
+def sync_folders_and_start_watching():
+    logger.info("Initializing folder watchers and database sync...")
+    try:
+        folders = folder_repository.get_all_folders()
+        for folder in folders:
+            folder_path = folder["path"]
+            logger.info(f"Starting startup sync sequence for: {folder_path}")
+            # Scan and compare hashes sequentially first
+            folder_watcher.scan_and_index(folder_path)
+            # After scanning completes, schedule and start live watchdog events
+            folder_watcher.start(folder_path)
+        logger.info("Folder startup synchronization complete.")
+    except Exception as e:
+        logger.error(f"Error syncing folders during startup: {e}")
+
+# Run startup sync in background thread to avoid blocking server boot
+threading.Thread(target=sync_folders_and_start_watching, daemon=True).start()
+
 
 # Folder APIs
 app.include_router(

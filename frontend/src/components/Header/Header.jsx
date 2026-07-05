@@ -9,7 +9,7 @@ function Header({ showSources, onToggleSources, onToggleSidebar, backendConnecte
                     <Menu size={18} />
                 </button>
                 <Search className="header-search-icon" size={18} />
-                <span className="header-title">Ask RecallX</span>
+                <span className="header-title">RecallX</span>
             </div>
 
             {/* Right side */}
@@ -27,7 +27,7 @@ function Header({ showSources, onToggleSources, onToggleSidebar, backendConnecte
                 <button
                     className={`icon-btn ${showSources ? "primary" : ""}`}
                     onClick={onToggleSources}
-                    title="Toggle Sources Panel"
+                    title="Toggle Knowledge References"
                     style={{ marginLeft: "8px" }}
                 >
                     <BookOpen size={18} />

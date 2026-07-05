@@ -37,23 +37,23 @@ function Chat({ messages, onSendMessage, loading }) {
                         <div className="welcome-icon-wrapper">
                             <Sparkles size={28} />
                         </div>
-                        <h2 className="welcome-title">Ask anything about your documents</h2>
+                        <h2 className="welcome-title">Never lose knowledge you've already learned.</h2>
                         <p className="welcome-subtitle">
-                            RecallX searches your local files using semantic search and generates grounded AI answers.
+                            RecallX continuously builds a searchable memory of your local documents so you can instantly rediscover information whenever you need it.
                         </p>
                         
                         <div className="suggestions-grid">
-                            <div className="suggestion-card" onClick={() => handleSuggestionClick("Summarize my Java notes")}>
-                                Summarize my Java notes →
+                            <div className="suggestion-card" onClick={() => handleSuggestionClick("Where did I read about JWT authentication?")}>
+                                Where did I read about JWT authentication? →
                             </div>
-                            <div className="suggestion-card" onClick={() => handleSuggestionClick("Explain Machine Learning")}>
-                                Explain Machine Learning →
+                            <div className="suggestion-card" onClick={() => handleSuggestionClick("Find my notes about React Hooks.")}>
+                                Find my notes about React Hooks. →
                             </div>
-                            <div className="suggestion-card" onClick={() => handleSuggestionClick("Search for Python examples")}>
-                                Search for Python examples →
+                            <div className="suggestion-card" onClick={() => handleSuggestionClick("Which document mentions FastAPI?")}>
+                                Which document mentions FastAPI? →
                             </div>
-                            <div className="suggestion-card" onClick={() => handleSuggestionClick("What is RAG?")}>
-                                What is RAG? →
+                            <div className="suggestion-card" onClick={() => handleSuggestionClick("Summarize everything I saved about Machine Learning.")}>
+                                Summarize everything I saved about Machine Learning. →
                             </div>
                         </div>
                     </div>
@@ -66,17 +66,20 @@ function Chat({ messages, onSendMessage, loading }) {
                                     {isUser ? <User size={16} /> : <Bot size={16} />}
                                 </div>
                                 <div className="message-content">
-                                    <div style={{ whiteSpace: "pre-wrap" }}>{msg.text}</div>
                                     {!isUser && msg.sources && msg.sources.length > 0 && (
-                                        <div className="message-sources" style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
-                                            <div style={{ fontWeight: "700", color: "var(--color-text-main)", fontSize: "13px" }}>Sources</div>
-                                            {msg.sources.map((src, sIdx) => (
-                                                <div key={sIdx} style={{ display: "flex", flexDirection: "column", gap: "4px", fontSize: "12px" }}>
-                                                    <div style={{ color: "var(--color-primary)", fontWeight: "600" }}>{src.file}</div>
-                                                    <div>Chunk {src.chunk}</div>
-                                                    <div>Score {src.score !== undefined ? src.score : ""}</div>
-                                                </div>
-                                            ))}
+                                        <div className="message-retrieval-header" style={{ marginBottom: "8px", fontSize: "13px", fontWeight: "600", color: "var(--color-text-main)" }}>
+                                            📄 Retrieved from {msg.sources[0].file}
+                                        </div>
+                                    )}
+                                    <div style={{ whiteSpace: "pre-wrap" }}>{msg.text}</div>
+                                    {!isUser && msg.isNotFound && (
+                                        <div className="suggestions-block" style={{ marginTop: "14px", padding: "12px 16px", backgroundColor: "var(--bg-card)", border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)", fontSize: "13px" }}>
+                                            <div style={{ fontWeight: "600", marginBottom: "8px", color: "var(--color-text-main)" }}>Suggestions</div>
+                                            <ul style={{ margin: 0, paddingLeft: "16px", display: "flex", flexDirection: "column", gap: "6px", color: "var(--color-text-muted)", listStyleType: "disc" }}>
+                                                <li>Try another keyword</li>
+                                                <li>Search using a broader topic</li>
+                                                <li>Make sure the relevant folder has been indexed</li>
+                                            </ul>
                                         </div>
                                     )}
                                 </div>
@@ -114,7 +117,7 @@ function Chat({ messages, onSendMessage, loading }) {
                     <input
                         type="text"
                         className="chat-input"
-                        placeholder="Ask anything about your documents..."
+                        placeholder="Search your knowledge..."
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}

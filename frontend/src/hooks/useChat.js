@@ -21,22 +21,40 @@ export function useChat() {
             // Extract answer and sources
             const { answer, sources } = data;
             
-            const formattedSources = (sources || []).map((src) => ({
-                file: src.file,
-                chunk: src.chunk,
-                score: src.score,
-                text: src.text || "Matching document segment used to generate response."
-            }));
+            const isNotFound = !sources || sources.length === 0 || 
+                answer.toLowerCase().includes("couldn't find") || 
+                answer.toLowerCase().includes("could not find") || 
+                answer.toLowerCase().includes("no information");
+
+            let finalAnswer = answer;
+            let formattedSources = [];
+
+            if (isNotFound) {
+                finalAnswer = "I couldn't find anything related to that in your knowledge library.";
+                formattedSources = [];
+            } else {
+                formattedSources = (sources || []).map((src) => ({
+                    file: src.file,
+                    chunk: src.chunk,
+                    score: src.score,
+                    text: src.text || "Segment from your recalled knowledge source."
+                }));
+            }
 
             // Add AI response to state
             setMessages((prev) => [
                 ...prev,
-                { text: answer, sender: "ai", sources: formattedSources }
+                { 
+                    text: finalAnswer, 
+                    sender: "ai", 
+                    sources: formattedSources,
+                    isNotFound: isNotFound
+                }
             ]);
 
             setCurrentSources(formattedSources);
             setBackendConnected(true);
-            return { success: true, answer, sources: formattedSources };
+            return { success: true, answer: finalAnswer, sources: formattedSources };
         } catch (err) {
             console.error("Chat API failure:", err);
             
@@ -48,7 +66,7 @@ export function useChat() {
                 friendlyError = "Unable to connect to RecallX backend. Please ensure the backend server is running.";
                 setBackendConnected(false);
             } else {
-                friendlyError = err.response?.data?.message || err.message || "Failed to get response from assistant.";
+                friendlyError = err.response?.data?.message || err.message || "Failed to retrieve from personal knowledge memory.";
             }
 
             setError(friendlyError);

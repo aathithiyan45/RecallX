@@ -17,7 +17,7 @@ Answer ONLY using the information provided in the context below.
 Rules:
 - Do not make up information.
 - If the answer is not present in the context, reply:
-  "I couldn't find that information in your documents."
+  "I couldn't find that information in your knowledge library."
 - Keep the answer concise and accurate.
 
 ======================

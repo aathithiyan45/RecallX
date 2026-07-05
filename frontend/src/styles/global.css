@@ -909,3 +909,185 @@ body {
     transform: translateX(-290px);
   }
 }
+
+/* Sidebar item actions, badges, status dots, and dropdown triggers */
+.sidebar-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.sidebar-item-badge {
+  font-size: 11px;
+  background-color: #E5E7EB;
+  color: #4B5563;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sidebar-item.active .sidebar-item-badge {
+  background-color: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.sidebar-item-status {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #10B981; /* Green for watching */
+  flex-shrink: 0;
+}
+
+.sidebar-item-status.indexing {
+  background-color: #3B82F6; /* Blue for indexing */
+  animation: pulse-status-indicator 1.2s infinite ease-in-out;
+}
+
+@keyframes pulse-status-indicator {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.sidebar-item-more-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+  position: relative;
+  outline: none;
+}
+
+.sidebar-item-more-btn:hover {
+  background-color: #E5E7EB;
+  color: var(--color-text-main);
+}
+
+.sidebar-item.active .sidebar-item-more-btn:hover {
+  background-color: #D1E2FF;
+  color: var(--color-primary);
+}
+
+/* Action Dropdown Menu styling */
+.source-menu-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.source-action-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  width: 190px;
+  padding: 4px 0;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.1s ease-out;
+}
+
+.source-action-menu button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.source-action-menu button:hover {
+  background-color: #F3F4F6;
+  color: var(--color-text-main);
+}
+
+.source-action-menu button.danger {
+  color: #DC2626;
+}
+
+.source-action-menu button.danger:hover {
+  background-color: #FEF2F2;
+  color: #B91C1C;
+}
+
+/* Reindex Progress Bar styling */
+.progress-bar-container {
+  width: 100%;
+  background-color: #E5E7EB;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--color-primary);
+  transition: width 0.2s ease-out;
+}
+
+/* Files Modal List styling */
+.files-list-container {
+  max-height: 260px;
+  overflow-y: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-top: 12px;
+}
+
+.file-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 13px;
+}
+
+.file-item-row:last-child {
+  border-bottom: none;
+}
+
+.file-item-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.file-item-name {
+  font-weight: 500;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-item-meta {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
