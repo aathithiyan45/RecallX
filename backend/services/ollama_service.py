@@ -11,6 +11,14 @@ class OllamaService:
         # Search relevant chunks
         search_results = search_service.search(question)
 
+        # Return fallback answer directly when ZERO chunks are found
+        if not search_results:
+            return {
+                "question": question,
+                "answer": "I couldn't find that information in your knowledge library.",
+                "sources": []
+            }
+
         # Build prompt
         prompt = prompt_builder.build(
             question,
