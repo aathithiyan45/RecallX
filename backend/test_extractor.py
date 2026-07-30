@@ -1,8 +1,7 @@
 from core.logger import logger
 from extractor.extractor_factory import ExtractorFactory
 
-file_path = "/Users/athiselvam/Documents/sample.txt"   # Change this
-
+file_path = "/Users/athiselvam/Documents/sample.txt"   
 extractor = ExtractorFactory.get_extractor(file_path)
 
 if extractor:

@@ -78,12 +78,12 @@ class VectorStore:
 
         return formatted_results
 
-    def delete_file(self, filename: str):
+    def delete_file(self, file_path: str):
 
         try:
             self.collection.delete(
                 where={
-                    "file": filename
+                    "path": file_path
                 }
             )
         except Exception:

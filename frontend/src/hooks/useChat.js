@@ -36,6 +36,7 @@ export function useChat() {
                 formattedSources = (sources || []).map((src) => ({
                     file: src.file,
                     chunk: src.chunk,
+                    page: src.page,
                     score: src.score,
                     text: src.text || "Segment from your recalled knowledge source."
                 }));

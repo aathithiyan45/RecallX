@@ -5,7 +5,7 @@ from extractor.base_extractor import BaseExtractor
 
 class DOCXExtractor(BaseExtractor):
 
-    def extract(self, file_path: str) -> str:
+    def extract(self, file_path: str) -> list:
 
         document = Document(file_path)
 
@@ -14,4 +14,4 @@ class DOCXExtractor(BaseExtractor):
         for paragraph in document.paragraphs:
             text += paragraph.text + "\n"
 
-        return text
+        return [{"page": 1, "text": text}]

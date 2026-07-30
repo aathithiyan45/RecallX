@@ -8,11 +8,11 @@ function SourcesPanel({ isOpen, onClose, sources }) {
     };
 
     const getMatchQuality = (score) => {
-        if (score === undefined || score === null) return "Good Match";
+        if (score === undefined || score === null) return "🟢 Good Match";
         const percentage = Math.max(5, Math.min(99, Math.round((1 - score / 1.6) * 100)));
-        if (percentage >= 85) return `Strong Match (${percentage}% Relevant)`;
-        if (percentage >= 70) return `Good Match (${percentage}% Relevant)`;
-        return `Fair Match (${percentage}% Relevant)`;
+        if (percentage >= 85) return `🟢 Strong Match (${percentage}% Relevant)`;
+        if (percentage >= 70) return `🟡 Good Match (${percentage}% Relevant)`;
+        return `🔴 Fair Match (${percentage}% Relevant)`;
     };
 
     return (
@@ -32,13 +32,7 @@ function SourcesPanel({ isOpen, onClose, sources }) {
                 ) : (
                     sources.map((src, index) => {
                         const pagePresent = src.page !== undefined && src.page !== null && src.page !== "";
-                        const headingPresent = src.heading !== undefined && src.heading !== null && src.heading !== "";
                         
-                        const details = [];
-                        if (pagePresent) details.push(`Page ${src.page}`);
-                        if (headingPresent) details.push(src.heading);
-                        details.push(`Segment ${src.chunk !== undefined ? src.chunk + 1 : index + 1}`);
-
                         return (
                             <div 
                                 key={index} 
@@ -62,12 +56,11 @@ function SourcesPanel({ isOpen, onClose, sources }) {
                                 </div>
                                 
                                 <div className="source-chunk-details" style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", fontSize: "11px", color: "var(--color-text-muted)", marginBottom: "8px" }}>
-                                    {details.map((detail, dIdx) => (
-                                        <span key={dIdx} style={{ display: "flex", alignItems: "center" }}>
-                                            {detail}
-                                            {dIdx < details.length - 1 && <span style={{ margin: "0 6px", color: "var(--color-text-muted)", opacity: 0.6 }}>•</span>}
+                                    {pagePresent && (
+                                        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                            📑 Page {src.page}
                                         </span>
-                                    ))}
+                                    )}
                                 </div>
                                 
                                 {src.text && (

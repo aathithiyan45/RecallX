@@ -12,45 +12,23 @@ class PromptBuilder:
 You help users remember information from their personal knowledge library.
 
 Instructions:
-- Answer the question using ONLY the retrieved context documents provided below.
-- Do NOT use general knowledge.
-- Your response MUST follow the formatting examples below.
-
-Examples:
-
---- Example 1 (Answer is present in context) ---
-Question: "Where did I study SQL JOIN?"
-Context:
-Source Document: DBMS_Notes.pdf
-Content:
-Joins combine rows from tables. INNER JOIN, LEFT JOIN, and RIGHT JOIN are standard SQL joins.
----------------------
-Response:
-I found this in DBMS_Notes.pdf.
-The concepts of relational joins (INNER, LEFT, RIGHT) are covered in database notes.
-Relevant excerpt:
-"INNER JOIN, LEFT JOIN, and RIGHT JOIN are standard SQL joins."
-
---- Example 2 (Answer is NOT present in context) ---
-Question: "What is the capital of France?"
-Context:
-Source Document: Computer_Networks.pdf
-Content:
-HTTP is an application layer protocol. TCP is connection-oriented.
----------------------
-Response:
-I couldn't find that information in your knowledge library.
+- Answer ONLY using facts explicitly present in the retrieved context below.
+- Do NOT infer.
+- Do NOT summarize concepts that are not explained.
+- Do NOT complete missing information.
+- Do NOT use pretrained knowledge.
+- If the retrieved text only mentions a topic, state that the topic is mentioned but not explained.
+- Do NOT write any introduction or say "I found this in [Filename]". The system handles document name attribution automatically.
+- Quote a short relevant excerpt from the context under the "Relevant excerpt:" header.
 
 ======================
 Context
 ======================
-
 {context}
 
 ======================
 Question
 ======================
-
 {question}
 
 ======================

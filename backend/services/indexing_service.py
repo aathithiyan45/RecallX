@@ -33,35 +33,47 @@ class IndexingService:
                 logger.error("Unsupported file type.")
                 return
 
-            text = extractor.extract(file_path)
+            pages = extractor.extract(file_path)
 
-            if not text.strip():
+            if not pages:
                 logger.error("File contains no readable text.")
                 return
-
-            chunks = text_chunker.chunk(text)
 
             filename = Path(file_path).name
 
             # Remove previous vectors for this file
-            vector_store.delete_file(filename)
+            vector_store.delete_file(file_path)
 
-            for index, chunk in enumerate(chunks):
+            import hashlib
+            path_hash = hashlib.sha256(file_path.encode("utf-8")).hexdigest()
 
-                embedding = embedding_model.encode(chunk)
+            chunk_global_index = 0
+            for page_data in pages:
+                page_num = page_data["page"]
+                page_text = page_data["text"]
 
-                vector_store.add_document(
-                    document_id=f"{filename}_{index}",
-                    text=chunk,
-                    embedding=embedding,
-                    metadata={
-                        "file": filename,
-                        "path": file_path,
-                        "chunk": index
-                    }
-                )
+                page_chunks = text_chunker.chunk(page_text)
 
-            logger.info(f"Indexed {len(chunks)} chunk(s).")
+                for chunk in page_chunks:
+                    if not chunk.strip():
+                        continue
+
+                    embedding = embedding_model.encode(chunk)
+
+                    vector_store.add_document(
+                        document_id=f"{path_hash}_{chunk_global_index}",
+                        text=chunk,
+                        embedding=embedding,
+                        metadata={
+                            "file": filename,
+                            "path": file_path,
+                            "chunk": chunk_global_index,
+                            "page": page_num
+                        }
+                    )
+                    chunk_global_index += 1
+
+            logger.info(f"Indexed {chunk_global_index} chunk(s) across {len(pages)} page(s).")
 
             indexed_file_repository.save_hash(
                 file_path,
