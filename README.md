@@ -16,7 +16,7 @@ RecallX searches the user's personal knowledge library and retrieves the most re
 - Automatically index PDF, DOCX, TXT, and Markdown files
 - Continuously monitor folders for newly added or modified documents
 - Perform semantic search using vector embeddings
-- Generate answers using a local Large Language Model (Ollama)
+- Generate answers using a local Large Language Model
 - Display document references and relevant excerpts
 - Run completely offline with local storage
 
