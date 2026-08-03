@@ -13,3 +13,8 @@ def register_folder(folder: FolderRequest):
 @router.get("/")
 def get_folders():
     return folder_service.get_all_folders()
+
+
+@router.get("/preview")
+def preview_file(path: str):
+    return folder_service.preview_file(path)

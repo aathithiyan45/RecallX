@@ -1091,3 +1091,29 @@ body {
   color: var(--color-text-muted);
   white-space: nowrap;
 }
+
+/* Document Preview Modal Customizations */
+.preview-modal-content {
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+}
+
+.search-highlight {
+  background-color: #FEF08A; /* Warm yellow background */
+  color: #1E293B;            /* Slate dark text */
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: 550;
+}
+
+/* Custom Scrollbar for document sheet */
+.document-sheet::-webkit-scrollbar {
+  width: 6px;
+}
+.document-sheet::-webkit-scrollbar-thumb {
+  background: #E5E7EB;
+  border-radius: 3px;
+}
+.document-sheet::-webkit-scrollbar-thumb:hover {
+  background: #D1D5DB;
+}

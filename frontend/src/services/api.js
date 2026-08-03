@@ -24,8 +24,14 @@ export const askQuestion = async (question) => {
     return response.data;
 };
 
+export const previewFile = async (path) => {
+    const response = await api.get("/folders/preview", { params: { path } });
+    return response.data;
+};
+
 export default {
     getFolders,
     addFolder,
-    askQuestion
+    askQuestion,
+    previewFile
 };

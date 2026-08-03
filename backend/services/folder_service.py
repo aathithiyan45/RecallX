@@ -82,5 +82,36 @@ class FolderService:
             
         return result
 
+    @staticmethod
+    def preview_file(file_path: str):
+        from extractor.extractor_factory import ExtractorFactory
+        import os
+        
+        if not os.path.exists(file_path):
+            return {
+                "success": False,
+                "message": "File not found on local disk."
+            }
+            
+        try:
+            extractor = ExtractorFactory.get_extractor(file_path)
+            if not extractor:
+                return {
+                    "success": False,
+                    "message": f"Preview not supported for this file type: {os.path.splitext(file_path)[1]}"
+                }
+                
+            pages = extractor.extract(file_path)
+            return {
+                "success": True,
+                "path": file_path,
+                "pages": pages
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "message": f"Failed to extract document contents: {str(e)}"
+            }
+
 
 folder_service = FolderService()

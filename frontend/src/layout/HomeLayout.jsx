@@ -4,9 +4,10 @@ import Header from "../components/Header/Header";
 import Chat from "../components/Chat/Chat";
 import SourcesPanel from "../components/Sources/SourcesPanel";
 import AddFolderModal from "../components/Sidebar/AddFolderModal";
+import DocumentPreviewModal from "../components/Sources/DocumentPreviewModal";
 import { useFolders } from "../hooks/useFolders";
 import { useChat } from "../hooks/useChat";
-import { Search, FileText, Loader2, X, AlertTriangle, Database } from "lucide-react";
+import { Search, FileText, Loader2, X, AlertTriangle, Database, Eye } from "lucide-react";
 
 function HomeLayout() {
     const { 
@@ -28,6 +29,7 @@ function HomeLayout() {
     const [showSources, setShowSources] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [previewFileState, setPreviewFileState] = useState(null);
 
     // Folder Modals and actions states
     const [activeModal, setActiveModal] = useState(null); // 'files' | 'details' | 'reindex' | 'remove'
@@ -350,9 +352,31 @@ function HomeLayout() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div style={{ textAlign: "right", fontSize: "11px", color: "var(--color-text-muted)", flexShrink: 0, marginLeft: "12px" }}>
-                                                    <div style={{ color: "#16A34A", fontWeight: "600", marginBottom: "2px" }}>Indexed ✓</div>
-                                                    <div>Last Modified: {modDate}</div>
+                                                <div style={{ display: "flex", alignItems: "center", gap: "14px", flexShrink: 0, marginLeft: "12px" }}>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-secondary"
+                                                        onClick={() => setPreviewFileState({ path: file.path, name: file.name })}
+                                                        style={{ 
+                                                            padding: "4px 8px", 
+                                                            fontSize: "12px", 
+                                                            height: "28px", 
+                                                            display: "flex", 
+                                                            alignItems: "center", 
+                                                            gap: "4px",
+                                                            borderColor: "var(--color-primary)",
+                                                            color: "var(--color-primary)",
+                                                            backgroundColor: "transparent",
+                                                            margin: 0
+                                                        }}
+                                                    >
+                                                        <Eye size={13} />
+                                                        Preview
+                                                    </button>
+                                                    <div style={{ textAlign: "right", fontSize: "11px", color: "var(--color-text-muted)" }}>
+                                                        <div style={{ color: "#16A34A", fontWeight: "600", marginBottom: "2px" }}>Indexed ✓</div>
+                                                        <div>Last Modified: {modDate}</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         );
@@ -443,6 +467,13 @@ function HomeLayout() {
                     </div>
                 </div>
             )}
+
+            <DocumentPreviewModal
+                isOpen={previewFileState !== null}
+                onClose={() => setPreviewFileState(null)}
+                filePath={previewFileState?.path}
+                fileName={previewFileState?.name}
+            />
         </div>
     );
 }
