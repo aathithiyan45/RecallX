@@ -9,7 +9,6 @@ function Sidebar({
     isOpen, 
     onClose,
     onViewFiles = () => {},
-    onViewDetails = () => {},
     onReindex = () => {},
     onRemove = () => {}
 }) {
@@ -95,9 +94,6 @@ function Sidebar({
                                             <div className="source-action-menu">
                                                 <button onClick={() => { setOpenMenuId(null); onViewFiles(folder); }}>
                                                     View Details
-                                                </button>
-                                                <button onClick={() => { setOpenMenuId(null); onViewDetails(folder); }}>
-                                                    View Details (Alt)
                                                 </button>
                                                 <button onClick={() => { setOpenMenuId(null); onReindex(folder); }}>
                                                     Re-index Source

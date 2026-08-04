@@ -87,12 +87,6 @@ function HomeLayout() {
         setActiveModal("files");
     };
 
-    const handleViewDetails = (folder) => {
-        setModalFolder(folder);
-        setFileSearchQuery("");
-        setActiveModal("details");
-    };
-
     const handleReindex = (folder) => {
         setModalFolder(folder);
         setReindexProgress(0);
@@ -166,7 +160,6 @@ function HomeLayout() {
                 isOpen={isSidebarOpen}
                 onClose={() => setIsSidebarOpen(false)}
                 onViewFiles={handleViewFiles}
-                onViewDetails={handleViewDetails}
                 onReindex={handleReindex}
                 onRemove={handleRemoveClick}
             />
@@ -203,7 +196,7 @@ function HomeLayout() {
             />
 
             {/* Knowledge Source Details Modal */}
-            {(activeModal === "files" || activeModal === "details") && modalFolder && (() => {
+            {activeModal === "files" && modalFolder && (() => {
                 const folderData = localFolders.find(f => f.path === modalFolder.path) || modalFolder;
                 const sourceName = folderData.name || folderData.path.split("/").pop() || folderData.path;
                 const files = folderData.files || [];
