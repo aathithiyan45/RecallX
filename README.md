@@ -29,7 +29,7 @@ RecallX searches the user's personal knowledge library and retrieves the most re
 - React
 - Vite
 - Axios
-- CSS
+- CSS3
 
 ### Backend
 
