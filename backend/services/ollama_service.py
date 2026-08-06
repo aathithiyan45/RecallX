@@ -36,10 +36,66 @@ def validate_context_evidence(question: str, search_results: list):
     return True, present_keywords, []
 
 
+def extract_best_sentence(text: str, question: str) -> str:
+    import re
+    # Split text into sentences using common sentence terminators (. ! ?)
+    sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?|\!)\s', text.strip())
+    sentences = [s.strip() for s in sentences if s.strip()]
+    
+    if not sentences:
+        return text
+        
+    from services.query_normalizer import query_normalizer
+    normalized_question = query_normalizer.normalize(question)
+    words = re.findall(r'\b\w+\b', normalized_question.lower())
+    keywords = [w for w in words if w not in query_normalizer.FILLER_WORDS and not w.isdigit()]
+    
+    if not keywords:
+        best_sentence = sentences[0]
+    else:
+        best_sentence = sentences[0]
+        max_score = -1
+        
+        for sentence in sentences:
+            sentence_lower = sentence.lower()
+            score = 0
+            for kw in keywords:
+                if kw in sentence_lower:
+                    score += 2
+                    if re.search(r'\b' + re.escape(kw) + r'\b', sentence_lower):
+                        score += 1
+            if score > max_score:
+                max_score = score
+                best_sentence = sentence
+                
+        if max_score <= 0:
+            best_sentence = sentences[0]
+            
+    # Format with quotes and leading/trailing ellipses if needed
+    formatted = best_sentence
+    original_clean = text.strip()
+    
+    has_leading = not original_clean.startswith(best_sentence)
+    has_trailing = not original_clean.endswith(best_sentence)
+    
+    prefix = "..." if has_leading else ""
+    suffix = "..." if has_trailing else ""
+    
+    return f'"{prefix}{formatted}{suffix}"'
+
+
 class OllamaService:
 
     @staticmethod
     def ask(question: str):
+
+        from services.intent_classifier import intent_classifier
+        from services.summary_service import summary_service
+
+        intent = intent_classifier.detect_intent(question)
+        if intent == "SUMMARY":
+            topic = intent_classifier.extract_topic(question)
+            return summary_service.summarize(question, topic)
 
         # Search relevant chunks
         search_results = search_service.search(question)
@@ -84,31 +140,25 @@ class OllamaService:
         # Generate answer
         llm_response = ollama_client.generate(prompt)
 
-        # Prepend the correct source filename and page number programmatically
-        first_metadata = filtered_results[0]["metadata"]
-        first_doc = first_metadata["file"]
-        page_num = first_metadata.get("page")
-
-        source_info = f"📄 Source\n{first_doc}"
-        if page_num is not None:
-            source_info += f"\n📑 Page {page_num}"
-
-        answer = f"{source_info}\n\n{llm_response.strip()}"
+        # Presentation is handled by React in the frontend
+        answer = llm_response.strip()
 
         # Format sources using only filtered results
         formatted_sources = []
 
         for result in filtered_results:
             meta = result["metadata"]
+            matched_sentence = extract_best_sentence(result["document"], question)
             formatted_sources.append(
                 {
                     "file": meta["file"],
                     "filename": meta["file"],
+                    "path": meta.get("path"),
                     "chunk": meta["chunk"],
                     "page": meta.get("page"),
                     "score": round(result["score"], 4),
                     "distance": round(result["score"], 4),
-                    "text": result["document"]
+                    "text": matched_sentence
                 }
             )
 

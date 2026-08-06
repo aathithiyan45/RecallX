@@ -8,7 +8,7 @@ from core.logger import logger
 class SearchService:
 
     @staticmethod
-    def search(query: str):
+    def search(query: str, top_k: int = TOP_K):
         normalized_query = query_normalizer.normalize(query)
 
         logger.info(f"Original Query: {query}")
@@ -18,7 +18,7 @@ class SearchService:
 
         results = vector_store.search(
             query_embedding=query_embedding,
-            top_k=TOP_K
+            top_k=top_k
         )
 
         logger.info(f"Retrieved Scores: {[r['score'] for r in results]}")

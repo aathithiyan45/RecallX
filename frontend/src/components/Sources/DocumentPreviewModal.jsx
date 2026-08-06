@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { X, FileText, ChevronLeft, ChevronRight, Search, Loader2, AlertTriangle } from "lucide-react";
 import { previewFile } from "../../services/api";
 
-function DocumentPreviewModal({ isOpen, onClose, filePath, fileName }) {
+function DocumentPreviewModal({ isOpen, onClose, filePath, fileName, initialPage }) {
     const [loading, setLoading] = useState(false);
     const [pages, setPages] = useState([]);
     const [error, setError] = useState("");
@@ -32,13 +32,16 @@ function DocumentPreviewModal({ isOpen, onClose, filePath, fileName }) {
             setLoading(true);
             setError("");
             setPages([]);
-            setCurrentPageIndex(0);
+            setCurrentPageIndex(initialPage ? Math.max(0, initialPage - 1) : 0);
             setSearchQuery("");
             
             try {
                 const res = await previewFile(filePath);
                 if (res.success) {
-                    setPages(res.pages || []);
+                    const fetchedPages = res.pages || [];
+                    setPages(fetchedPages);
+                    const startPage = initialPage ? Math.max(0, Math.min(initialPage - 1, fetchedPages.length - 1)) : 0;
+                    setCurrentPageIndex(startPage);
                 } else {
                     setError(res.message || "Could not retrieve document preview.");
                 }
@@ -51,7 +54,7 @@ function DocumentPreviewModal({ isOpen, onClose, filePath, fileName }) {
         };
         
         fetchPreview();
-    }, [isOpen, filePath]);
+    }, [isOpen, filePath, initialPage]);
 
     if (!isOpen) return null;
 

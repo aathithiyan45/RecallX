@@ -47,6 +47,18 @@ def initialize_database():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS search_history(
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            query TEXT NOT NULL,
+
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+        )
+    """)
+
     connection.commit()
 
     connection.close()

@@ -8,6 +8,7 @@ import DocumentPreviewModal from "../components/Sources/DocumentPreviewModal";
 import { useFolders } from "../hooks/useFolders";
 import { useChat } from "../hooks/useChat";
 import { Search, FileText, Loader2, X, AlertTriangle, Database, Eye } from "lucide-react";
+import { getHistory, saveHistory, deleteHistory, clearHistory } from "../services/api";
 
 function HomeLayout() {
     const { 
@@ -30,6 +31,40 @@ function HomeLayout() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [previewFileState, setPreviewFileState] = useState(null);
+    const [history, setHistory] = useState([]);
+
+    const loadHistory = async () => {
+        try {
+            const res = await getHistory();
+            if (res.success) {
+                setHistory(res.history || []);
+            }
+        } catch (err) {
+            console.error("Error loading search history:", err);
+        }
+    };
+
+    const handleDeleteHistory = async (id) => {
+        try {
+            const res = await deleteHistory(id);
+            if (res.success) {
+                loadHistory();
+            }
+        } catch (err) {
+            console.error("Error deleting history item:", err);
+        }
+    };
+
+    const handleClearHistory = async () => {
+        try {
+            const res = await clearHistory();
+            if (res.success) {
+                loadHistory();
+            }
+        } catch (err) {
+            console.error("Error clearing search history:", err);
+        }
+    };
 
     // Folder Modals and actions states
     const [activeModal, setActiveModal] = useState(null); // 'files' | 'details' | 'reindex' | 'remove'
@@ -59,6 +94,7 @@ function HomeLayout() {
                 setBackendConnected(false);
             } else {
                 setBackendConnected(true);
+                loadHistory();
             }
         };
         init();
@@ -74,9 +110,32 @@ function HomeLayout() {
     };
 
     const handleSendMessage = async (text) => {
+        try {
+            await saveHistory(text);
+            loadHistory();
+        } catch (err) {
+            console.error("Error saving search history:", err);
+        }
+
         const res = await sendMessage(text);
         if (res.success && res.sources && res.sources.length > 0) {
             setShowSources(true); // Auto-open sources for a premium UX
+        }
+    };
+
+    const handleOpenPreview = (path, name, page) => {
+        let resolvedPath = path;
+        if (!resolvedPath && name && localFolders) {
+            for (const folder of localFolders) {
+                const foundFile = folder.files?.find(f => f.name === name);
+                if (foundFile) {
+                    resolvedPath = foundFile.path;
+                    break;
+                }
+            }
+        }
+        if (resolvedPath) {
+            setPreviewFileState({ path: resolvedPath, name, initialPage: page });
         }
     };
 
@@ -162,6 +221,10 @@ function HomeLayout() {
                 onViewFiles={handleViewFiles}
                 onReindex={handleReindex}
                 onRemove={handleRemoveClick}
+                history={history}
+                onSelectHistory={handleSendMessage}
+                onDeleteHistory={handleDeleteHistory}
+                onClearHistory={handleClearHistory}
             />
 
             <div className="sidebar-backdrop show" style={{ display: isSidebarOpen ? "block" : "none" }} onClick={() => setIsSidebarOpen(false)} />
@@ -179,12 +242,14 @@ function HomeLayout() {
                         messages={messages}
                         onSendMessage={handleSendMessage}
                         loading={chatLoading}
+                        onOpenPreview={handleOpenPreview}
                     />
 
                     <SourcesPanel
                         isOpen={showSources}
                         onClose={() => setShowSources(false)}
                         sources={currentSources}
+                        onOpenPreview={handleOpenPreview}
                     />
                 </div>
             </div>
@@ -466,6 +531,7 @@ function HomeLayout() {
                 onClose={() => setPreviewFileState(null)}
                 filePath={previewFileState?.path}
                 fileName={previewFileState?.name}
+                initialPage={previewFileState?.initialPage}
             />
         </div>
     );

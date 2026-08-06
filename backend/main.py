@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.folder import router as folder_router
 from api.search import router as search_router
 from api.chat import router as chat_router
+from api.history import router as history_router
 
 from database.connection import initialize_database
 from core.exceptions import OllamaUnavailableError, DatabaseError, ExtractionError
@@ -119,6 +120,13 @@ app.include_router(
     chat_router,
     prefix="/chat",
     tags=["Chat"]
+)
+
+# History APIs
+app.include_router(
+    history_router,
+    prefix="/history",
+    tags=["History"]
 )
 
 @app.get("/")

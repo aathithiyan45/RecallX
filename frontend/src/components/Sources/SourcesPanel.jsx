@@ -1,10 +1,13 @@
 import { X, FileText } from "lucide-react";
 
-function SourcesPanel({ isOpen, onClose, sources }) {
+function SourcesPanel({ isOpen, onClose, sources, onOpenPreview }) {
     if (!isOpen) return null;
 
     const handleSourceClick = (src) => {
         console.log("Visual navigation click on source card:", src);
+        if (onOpenPreview && src.path) {
+            onOpenPreview(src.path, src.file, src.page);
+        }
     };
 
     const getMatchQuality = (score) => {
@@ -12,7 +15,7 @@ function SourcesPanel({ isOpen, onClose, sources }) {
         const percentage = Math.max(5, Math.min(99, Math.round((1 - score / 1.6) * 100)));
         if (percentage >= 85) return `🟢 Strong Match (${percentage}% Relevant)`;
         if (percentage >= 70) return `🟡 Good Match (${percentage}% Relevant)`;
-        return `🔴 Fair Match (${percentage}% Relevant)`;
+        return `🔴 Weak Match (${percentage}% Relevant)`;
     };
 
     return (
@@ -38,27 +41,26 @@ function SourcesPanel({ isOpen, onClose, sources }) {
                                 key={index} 
                                 className="source-card"
                                 onClick={() => handleSourceClick(src)}
-                                title="Click to open source document at the matched location (Coming soon)"
+                                title="Click to open this document at the matched page"
                                 style={{ cursor: "pointer" }}
                             >
-                                <div className="source-card-header">
-                                    <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0, flex: 1 }}>
-                                        <FileText size={16} style={{ color: "var(--color-primary)", flexShrink: 0 }} />
-                                        <span className="source-filename" title={src.file}>
-                                            {src.file}
-                                        </span>
+                                <div className="source-card-header" style={{ alignItems: "flex-start", marginBottom: "8px" }}>
+                                    <div style={{ display: "flex", gap: "8px", minWidth: 0, flex: 1 }}>
+                                        <FileText size={16} style={{ color: "var(--color-primary)", flexShrink: 0, marginTop: "2px" }} />
+                                        <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                                            <span className="source-filename" title={src.file}>
+                                                {src.file}
+                                            </span>
+                                            {pagePresent && (
+                                                <span style={{ fontSize: "11px", color: "var(--color-text-muted)", marginTop: "2px", fontWeight: "600" }}>
+                                                    Page {src.page}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
                                     {src.score !== undefined && (
-                                        <span className="source-score" title="Match quality">
+                                        <span className="source-score" title="Match quality" style={{ flexShrink: 0 }}>
                                             {getMatchQuality(src.score)}
-                                        </span>
-                                    )}
-                                </div>
-                                
-                                <div className="source-chunk-details" style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", fontSize: "11px", color: "var(--color-text-muted)", marginBottom: "8px" }}>
-                                    {pagePresent && (
-                                        <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                            📑 Page {src.page}
                                         </span>
                                     )}
                                 </div>
@@ -68,6 +70,12 @@ function SourcesPanel({ isOpen, onClose, sources }) {
                                         "{src.text}"
                                     </div>
                                 )}
+
+                                <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }}>
+                                    <span style={{ fontSize: "11px", fontWeight: "600", color: "var(--color-primary)", display: "flex", alignItems: "center", gap: "2px" }}>
+                                        {src.file?.toLowerCase().endsWith(".pdf") ? "Open PDF →" : "Open Document →"}
+                                    </span>
+                                </div>
                             </div>
                         );
                     })
