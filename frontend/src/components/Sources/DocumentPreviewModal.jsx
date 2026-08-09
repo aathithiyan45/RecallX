@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { X, FileText, ChevronLeft, ChevronRight, Search, Loader2, AlertTriangle } from "lucide-react";
 import { previewFile } from "../../services/api";
 
-function DocumentPreviewModal({ isOpen, onClose, filePath, fileName, initialPage }) {
+function DocumentPreviewModal({ isOpen, onClose, filePath, fileName, initialPage, highlightText: sourceHighlight }) {
     const [loading, setLoading] = useState(false);
     const [pages, setPages] = useState([]);
     const [error, setError] = useState("");
@@ -73,24 +73,69 @@ function DocumentPreviewModal({ isOpen, onClose, filePath, fileName, initialPage
         }
     };
 
-    // Helper to highlight matching text occurrences
-    const highlightText = (text, query) => {
-        if (!query.trim()) return text;
+    // Helper to highlight matching text occurrences (supports manual search queries and matched source sentences)
+    const highlightText = (text, query, sourceHighlight) => {
+        if (!query.trim() && !sourceHighlight) return text;
         
-        // Escape regex special chars
-        const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const regex = new RegExp(`(${escapedQuery})`, "gi");
+        let regexParts = [];
+        if (query.trim()) {
+            regexParts.push(query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+        }
+        let cleanSource = "";
+        if (sourceHighlight) {
+            cleanSource = sourceHighlight.replace(/^"|"$|^[.\s]+|[.\s]+$/g, "").trim();
+            if (cleanSource.length > 5) {
+                regexParts.push(cleanSource.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+            }
+        }
         
+        if (regexParts.length === 0) return text;
+        
+        // Single unified capturing group to split by matching terms cleanly
+        const regex = new RegExp(`(${regexParts.join("|")})`, "gi");
         const parts = text.split(regex);
-        return parts.map((part, index) => 
-            regex.test(part) ? (
-                <mark key={index} className="search-highlight">
-                    {part}
-                </mark>
-            ) : (
-                part
-            )
-        );
+        
+        return parts.map((part, index) => {
+            if (!part) return null;
+            
+            // Check if matches manual search query
+            if (query.trim()) {
+                const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                const queryRegex = new RegExp(`^${escapedQuery}$`, "i");
+                if (queryRegex.test(part)) {
+                    return (
+                        <mark key={index} className="search-highlight">
+                            {part}
+                        </mark>
+                    );
+                }
+            }
+            
+            // Check if matches RAG source sentence
+            if (cleanSource) {
+                const escapedSource = cleanSource.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                const sourceRegex = new RegExp(`^${escapedSource}$`, "i");
+                if (sourceRegex.test(part)) {
+                    return (
+                        <mark 
+                            key={index} 
+                            style={{ 
+                                backgroundColor: "#D1FAE5", 
+                                color: "#065F46", 
+                                padding: "2px 4px", 
+                                borderRadius: "3px",
+                                fontWeight: "500",
+                                display: "inline"
+                            }}
+                        >
+                            {part}
+                        </mark>
+                    );
+                }
+            }
+            
+            return part;
+        });
     };
 
     return (
@@ -209,7 +254,7 @@ function DocumentPreviewModal({ isOpen, onClose, filePath, fileName, initialPage
                                 className="document-sheet"
                                 style={{ 
                                     flex: 1, 
-                                    backgroundColor: "#FFFFFF", 
+                                    backgroundColor: "var(--bg-primary)", 
                                     border: "1px solid var(--color-border)", 
                                     borderRadius: "var(--radius-md)", 
                                     padding: "32px", 
@@ -217,12 +262,12 @@ function DocumentPreviewModal({ isOpen, onClose, filePath, fileName, initialPage
                                     boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)",
                                     lineHeight: "1.6",
                                     fontSize: "14px",
-                                    color: "#374151"
+                                    color: "var(--color-text-main)"
                                 }}
                             >
                                 {activePage && (
                                     <div style={{ whiteSpace: "pre-wrap", fontFamily: "var(--font-family)" }}>
-                                        {highlightText(activePage.text, searchQuery)}
+                                        {highlightText(activePage.text, searchQuery, sourceHighlight)}
                                     </div>
                                 )}
                             </div>

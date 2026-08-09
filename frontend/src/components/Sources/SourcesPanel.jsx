@@ -6,7 +6,7 @@ function SourcesPanel({ isOpen, onClose, sources, onOpenPreview }) {
     const handleSourceClick = (src) => {
         console.log("Visual navigation click on source card:", src);
         if (onOpenPreview && src.path) {
-            onOpenPreview(src.path, src.file, src.page);
+            onOpenPreview(src.path, src.file, src.page, src.text);
         }
     };
 

@@ -187,7 +187,7 @@ function Chat({ messages, onSendMessage, loading, onOpenPreview }) {
                                                 Source
                                             </div>
                                             <div 
-                                                onClick={() => onOpenPreview && onOpenPreview(msg.sources[0].path, msg.sources[0].file, msg.sources[0].page)}
+                                                onClick={() => onOpenPreview && onOpenPreview(msg.sources[0].path, msg.sources[0].file, msg.sources[0].page, msg.sources[0].text)}
                                                 className="chat-source-row"
                                                 style={{ 
                                                     display: "flex", 
@@ -199,7 +199,7 @@ function Chat({ messages, onSendMessage, loading, onOpenPreview }) {
                                                     padding: "8px 12px",
                                                     borderRadius: "var(--radius-sm)",
                                                     border: "1px solid var(--color-border)",
-                                                    backgroundColor: "#F9FAFB",
+                                                    backgroundColor: "var(--bg-primary)",
                                                     transition: "var(--transition-smooth)",
                                                     width: "100%"
                                                 }}

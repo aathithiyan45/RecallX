@@ -7,7 +7,7 @@ import AddFolderModal from "../components/Sidebar/AddFolderModal";
 import DocumentPreviewModal from "../components/Sources/DocumentPreviewModal";
 import { useFolders } from "../hooks/useFolders";
 import { useChat } from "../hooks/useChat";
-import { Search, FileText, Loader2, X, AlertTriangle, Database, Eye } from "lucide-react";
+import { Search, FileText, Loader2, X, AlertTriangle, Database, Eye, Settings, Sun, Moon } from "lucide-react";
 import { getHistory, saveHistory, deleteHistory, clearHistory } from "../services/api";
 
 function HomeLayout() {
@@ -32,6 +32,15 @@ function HomeLayout() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [previewFileState, setPreviewFileState] = useState(null);
     const [history, setHistory] = useState([]);
+    const [theme, setTheme] = useState(() => {
+        return localStorage.getItem("recallx-theme") || "light";
+    });
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+    useEffect(() => {
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem("recallx-theme", theme);
+    }, [theme]);
 
     const loadHistory = async () => {
         try {
@@ -123,7 +132,7 @@ function HomeLayout() {
         }
     };
 
-    const handleOpenPreview = (path, name, page) => {
+    const handleOpenPreview = (path, name, page, highlightText) => {
         let resolvedPath = path;
         if (!resolvedPath && name && localFolders) {
             for (const folder of localFolders) {
@@ -135,7 +144,7 @@ function HomeLayout() {
             }
         }
         if (resolvedPath) {
-            setPreviewFileState({ path: resolvedPath, name, initialPage: page });
+            setPreviewFileState({ path: resolvedPath, name, initialPage: page, highlightText });
         }
     };
 
@@ -225,6 +234,7 @@ function HomeLayout() {
                 onSelectHistory={handleSendMessage}
                 onDeleteHistory={handleDeleteHistory}
                 onClearHistory={handleClearHistory}
+                onOpenSettings={() => setIsSettingsOpen(true)}
             />
 
             <div className="sidebar-backdrop show" style={{ display: isSidebarOpen ? "block" : "none" }} onClick={() => setIsSidebarOpen(false)} />
@@ -532,7 +542,86 @@ function HomeLayout() {
                 filePath={previewFileState?.path}
                 fileName={previewFileState?.name}
                 initialPage={previewFileState?.initialPage}
+                highlightText={previewFileState?.highlightText}
             />
+
+            {isSettingsOpen && (
+                <div className="modal-overlay" onClick={() => setIsSettingsOpen(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "420px", padding: "24px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--color-border)", paddingBottom: "16px", marginBottom: "16px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                <Settings size={20} style={{ color: "var(--color-primary)" }} />
+                                <h3 className="modal-title" style={{ fontSize: "16px", margin: 0 }}>Application Settings</h3>
+                            </div>
+                            <button className="icon-btn" onClick={() => setIsSettingsOpen(false)} style={{ padding: "6px" }}>
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                            <div>
+                                <label style={{ fontSize: "12px", fontWeight: "600", color: "var(--color-text-muted)", display: "block", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                    Appearance Theme
+                                </label>
+                                <div style={{ display: "flex", gap: "12px" }}>
+                                    <button 
+                                        className={`theme-toggle-btn ${theme === "light" ? "active" : ""}`}
+                                        onClick={() => setTheme("light")}
+                                        style={{
+                                            flex: 1,
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            gap: "8px",
+                                            padding: "16px",
+                                            borderRadius: "var(--radius-md)",
+                                            border: theme === "light" ? "2px solid var(--color-primary)" : "1px solid var(--color-border)",
+                                            backgroundColor: theme === "light" ? "rgba(37, 99, 235, 0.05)" : "var(--bg-primary)",
+                                            color: theme === "light" ? "var(--color-primary)" : "var(--color-text-main)",
+                                            cursor: "pointer",
+                                            fontWeight: "600",
+                                            fontSize: "13px",
+                                            transition: "var(--transition-smooth)"
+                                        }}
+                                    >
+                                        <Sun size={24} />
+                                        Light Theme
+                                    </button>
+                                    <button 
+                                        className={`theme-toggle-btn ${theme === "dark" ? "active" : ""}`}
+                                        onClick={() => setTheme("dark")}
+                                        style={{
+                                            flex: 1,
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            gap: "8px",
+                                            padding: "16px",
+                                            borderRadius: "var(--radius-md)",
+                                            border: theme === "dark" ? "2px solid var(--color-primary)" : "1px solid var(--color-border)",
+                                            backgroundColor: theme === "dark" ? "rgba(59, 130, 246, 0.1)" : "var(--bg-primary)",
+                                            color: theme === "dark" ? "var(--color-primary)" : "var(--color-text-main)",
+                                            cursor: "pointer",
+                                            fontWeight: "600",
+                                            fontSize: "13px",
+                                            transition: "var(--transition-smooth)"
+                                        }}
+                                    >
+                                        <Moon size={24} />
+                                        Dark Theme
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "24px", paddingTop: "16px", borderTop: "1px solid var(--color-border)" }}>
+                            <button className="btn-primary" onClick={() => setIsSettingsOpen(false)} style={{ margin: 0, height: "36px", padding: "0 24px", width: "auto" }}>
+                                Done
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

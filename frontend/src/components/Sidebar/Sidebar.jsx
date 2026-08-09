@@ -53,7 +53,8 @@ function Sidebar({
     history = [],
     onSelectHistory = () => {},
     onDeleteHistory = () => {},
-    onClearHistory = () => {}
+    onClearHistory = () => {},
+    onOpenSettings = () => {}
 }) {
     const [openMenuId, setOpenMenuId] = useState(null);
     const [openHistoryMenuId, setOpenHistoryMenuId] = useState(null);
@@ -220,7 +221,7 @@ function Sidebar({
                                         ))}
 
                                         {/* Clear History Button */}
-                                        <div style={{ marginTop: "8px", paddingLeft: "4px" }}>
+                                        <div style={{ marginTop: "12px", paddingLeft: "4px", paddingRight: "4px" }}>
                                             {!showClearConfirm ? (
                                                 <button 
                                                     onClick={() => setShowClearConfirm(true)}
@@ -239,21 +240,48 @@ function Sidebar({
                                                     Clear History
                                                 </button>
                                             ) : (
-                                                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "11px" }}>
-                                                    <span style={{ color: "var(--color-text-muted)", fontWeight: "500" }}>Confirm clear?</span>
-                                                    <button 
-                                                        onClick={() => { setShowClearConfirm(false); onClearHistory(); }}
-                                                        style={{ background: "none", border: "none", color: "#DC2626", fontWeight: "700", cursor: "pointer", padding: 0 }}
-                                                    >
-                                                        Yes
-                                                    </button>
-                                                    <span style={{ color: "var(--color-text-muted)" }}>•</span>
-                                                    <button 
-                                                        onClick={() => setShowClearConfirm(false)}
-                                                        style={{ background: "none", border: "none", color: "var(--color-text-muted)", fontWeight: "600", cursor: "pointer", padding: 0 }}
-                                                    >
-                                                        Cancel
-                                                    </button>
+                                                <div className="clear-history-card">
+                                                    <div className="clear-history-card-title">
+                                                        Are you sure you want to clear all history?
+                                                    </div>
+                                                    <div style={{ display: "flex", gap: "6px" }}>
+                                                        <button 
+                                                            onClick={() => { setShowClearConfirm(false); onClearHistory(); }}
+                                                            className="clear-history-confirm-btn"
+                                                            style={{ 
+                                                                flex: 1,
+                                                                backgroundColor: "#DC2626", 
+                                                                color: "white", 
+                                                                border: "none", 
+                                                                padding: "6px 8px", 
+                                                                borderRadius: "4px", 
+                                                                fontSize: "11px", 
+                                                                fontWeight: "600", 
+                                                                cursor: "pointer",
+                                                                transition: "background-color 0.2s"
+                                                            }}
+                                                        >
+                                                            Yes, Clear
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => setShowClearConfirm(false)}
+                                                            className="clear-history-cancel-btn"
+                                                            style={{ 
+                                                                flex: 1,
+                                                                backgroundColor: "var(--bg-card)", 
+                                                                color: "var(--color-text-main)", 
+                                                                border: "1px solid var(--color-border)", 
+                                                                padding: "6px 8px", 
+                                                                borderRadius: "4px", 
+                                                                fontSize: "11px", 
+                                                                fontWeight: "600", 
+                                                                cursor: "pointer",
+                                                                transition: "all 0.2s"
+                                                            }}
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
@@ -268,7 +296,7 @@ function Sidebar({
 
             {/* Footer */}
             <div className="sidebar-footer">
-                <button className="sidebar-footer-btn">
+                <button className="sidebar-footer-btn" onClick={onOpenSettings}>
                     <Settings size={16} />
                     Settings
                 </button>
