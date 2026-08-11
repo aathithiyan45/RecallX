@@ -11,7 +11,7 @@ RecallX searches the user's personal knowledge library and retrieves the most re
 ---
 
 ## Features
-
+ 
 - Add local folders as Knowledge Sources 
 - Automatically index PDF, DOCX, TXT, and Markdown files
 - Continuously monitor folders for newly added or modified documents
